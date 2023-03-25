@@ -16,8 +16,8 @@
     <body>
     <!--Add a nav bar here -->
         <nav>
-            <a href="about">About us</a>
-            <a href="contact">Contact Us</a>
+            <a href="{% url 'djangoapp:about' %}">About us</a>
+            <a href="{% url 'djangoapp:contact' %}">Contact Us</a>
         </nav>
 
         <h1>
