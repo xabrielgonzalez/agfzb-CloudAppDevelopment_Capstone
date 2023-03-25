@@ -1,7 +1,12 @@
 from django.urls import path
 from django.conf.urls.static import static
 from django.conf import settings
-from . import views
+from .views import home
+from .views import about
+from .views import contact
+from .views import login_request
+from .views import logout_request
+from .views import registration_request
 
 app_name = 'djangoapp'
 urlpatterns = [
@@ -10,18 +15,18 @@ urlpatterns = [
     # name the URL
 
     # path for about view
-    path(route='about/', view=views.about, name='about'),
+    path('about', about, name='about'),
 
     # path for contact us view
-    path(route='contact/', view=views.contact, name='contact'),
+    path('contact', contact , name='contact'),
 
-    path(route='registration/', view=views.registration, name='register'),
+    path('registration', registration_request, name='registration'),
     # path for login
-    path(route='login/', view=views.login, name='login'),
+    path('login', login_request, name='login'),
     # path for logout
-    path(route='logout/', view=views.logout, name='logout'),
+    path('logout', logout_request, name='logout'),
     
-    path(route='home/', view=views.home, name='index'),
+    path('', home, name='index'),
 
     # path for dealer reviews view
     
