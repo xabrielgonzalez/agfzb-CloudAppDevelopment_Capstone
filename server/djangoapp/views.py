@@ -29,9 +29,9 @@ def contact(request):
     context = {}
     if request.method == "GET":
         return render(request, 'djangoapp/contact.html', context)
+
 # Create a `login_request` view to handle sign in request
-# Create a `login_request` view to handle sign in request
-def login(request):
+def login_request(request):
     context = {}
     # Handles POST request
     if request.method == "POST":
@@ -53,23 +53,17 @@ def login(request):
 # ...
 
 # Create a `logout_request` view to handle sign out request
-def logout(request):
-    # Get the user object based on session id in request
-    print("Log out the user `{}`".format(request.user.username))
-    # Logout user in the request
+def logout_request(request): 
     logout(request)
-    # Redirect user back to course list view
     return redirect('djangoapp:index')
 
 # Create a `registration_request` view to handle sign up request
-def registration(request):
+def registration_request(request):
     return render(request,'djangoapp/registration.html')
 
 # Update the `get_dealerships` view to render the index page with a list of dealerships
 def home(request):
-    context = {}
-    if request.method == "GET":
-        return render(request, 'djangoapp/index.html', context)
+        return render(request, 'djangoapp/index.html')
 
 
 # Create a `get_dealer_details` view to render the reviews of a dealer
