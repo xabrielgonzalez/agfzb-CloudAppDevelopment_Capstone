@@ -116,4 +116,4 @@ def analyze_review_sentiments(dealerreview):
                               return_analyzed_text=True, language="en")
     result = json_result["sentiment"]["document"]["label"]
 
-    return result
+    return result 
