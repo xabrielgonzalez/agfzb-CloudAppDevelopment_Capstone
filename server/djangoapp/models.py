@@ -118,4 +118,4 @@ class DealerReview:
         self.sentiment = sentiment
 
         def __str__(self):
-            return self.review 
+            return self.review
