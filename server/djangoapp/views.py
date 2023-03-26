@@ -66,10 +66,22 @@ def home(request):
         return render(request, 'djangoapp/index.html')
 
 
-# Create a `get_dealer_details` view to render the reviews of a dealer
-# def get_dealer_details(request, dealer_id):
-# ...
+def get_dealer_details(request, dealer_id):
+    dealer = get_object_or_404(Dealer, pk=dealer_id)
+    reviews = Review.objects.filter(dealer=dealer)
+    context = {'dealer': dealer, 'reviews': reviews}
+    return render(request, 'dealer_details.html', context)
 
-# Create a `add_review` view to submit a review
-# def add_review(request, dealer_id):
-# ...
+
+def add_review(request, dealer_id):
+    dealer = get_object_or_404(Dealer, pk=dealer_id)
+    if request.method == 'POST':
+        review = Review(dealer=dealer, user=request.user)
+        review.comment = request.POST.get('comment')
+        review.rating = int(request.POST.get('rating'))
+        review.pub_date = datetime.now()
+        review.save()
+        messages.success(request, 'Review added successfully')
+        return redirect('dealer_details', dealer_id=dealer.id)
+    else:
+        return render(request, 'add_review.html', {'dealer': dealer})
