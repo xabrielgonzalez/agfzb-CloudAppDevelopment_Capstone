@@ -1,109 +1,87 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
+<head>
 
     <meta charset="UTF-8">
     <title>Dealership Review</title>
-    {% load static %}
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <link href="https://unpkg.com/bootstrap-table@1.18.2/dist/bootstrap-table.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/bootstrap-table@1.18.2/dist/bootstrap-table.min.js"></script>
+    <script src="https://unpkg.com/bootstrap-table@1.18.2/dist/extensions/filter-control/bootstrap-table-filter-control.min.js"></script>
 
-    </head>
-    <body>
+</head>
 
-        <!--Add a nav bar here -->
-            <nav class="navbar navbar-light shadow" style="background-color: #e3f2fd;">
-                <div class="container-fluid">
-                    <div class="navbar-header">
-                        <a class="navbar-brand" href="{% url 'djangoapp:index' %}">Best Cars</a> 
-                    </div>
-            
-                    <ul class="nav navbar-nav flex-row">
-                        {% if current_endpoint == "/djangoapp/about/" %}
-                            <li class="nav-item mx-5 active">
-                                <a class="nav-link" href="{% url 'djangoapp:about' %}">About Us</a>
-                            </li>
-                            <li class="nav-item mx-5">
-                                <a class="nav-link" href="{% url 'djangoapp:contact' %}">Contact Us</a>
-                            </li>
-                        {% elif current_endpoint == "/djangoapp/contact/" %}
-                            <li class="nav-item mx-5">
-                                <a class="nav-link" href="{% url 'djangoapp:about' %}">About Us</a>
-                            </li>
-                            <li class="nav-item mx-5 active">
-                                <a class="nav-link" href="{% url 'djangoapp:contact' %}">Contact Us</a>
-                            </li>
-                        {% else %}
-                            <li class="nav-item mx-5">
-                                <a class="nav-link" href="{% url 'djangoapp:about' %}">About Us</a>
-                            </li>
-                            <li class="nav-item mx-5">
-                                <a class="nav-link" href="{% url 'djangoapp:contact' %}">Contact Us</a>
-                            </li>
-                        {% endif %}
-                    </ul>
-            
-                    <ul class="nav navbar-nav navbar-right">
-                        {% if user.is_authenticated %}
-                            <li class="d-flex align-items-baseline">
-                                <a href="{% url 'djangoapp:add_review' dealer_id %}">Write a Review</a>
-                                <a class="btn btn-link" href="#">({{ user.username }})</a>
-                                <a class="btn btn-link" href="{% url 'djangoapp:logout' %}">Logout</a>
-                            </li>
-                        {% else %}
-                            <li>
-                                <form class="form-inline" action="{% url 'djangoapp:login' %}" method="post">
-                                    {% csrf_token %}
-                                    <div class="input-group">
-                                        <input type="text" class="form-control" placeholder="Username" name="username" >
-                                        <input type="password" class="form-control" placeholder="Password" name="psw" >
-                                        <button class="btn btn-primary" type="submit">Login</button>
-                                        <a class="btn btn-link" href="{% url 'djangoapp:registration' %}">Sign Up</a>
-                                    </div>
-                                </form>
-                            </li>
-                        {% endif %}
-                    </ul>
-                </div>
-            </nav>
-        <!-- Add reviews as cards -->
-        <main class="container-fluid">
-            <h2 class="mt-4">Reviews for <b>{{ dealer_name }}</b></h2>
-            <div class="container mt-4">
-                <div class="card-columns">
-                    {% if review_list %}
+<body>
 
-                        {% for review in review_list %}
-                            <div class="card" style="min-height: 210px;">
-                                {% if review.sentiment == "positive" %}
-                                    <img class="card-img-left" src="{{MEDIA_URL}}/emoji/positive.png" WIDTH="40px" alt="Positive Sentiment">
-                                {% elif review.sentiment == "negative" %}
-                                    <img class="card-img-left" src="{{MEDIA_URL}}/emoji/negative.png" WIDTH="40px" alt="Negative Sentiment">
-                                {% else %}
-                                    <img class="card-img-left" src="{{MEDIA_URL}}/emoji/neutral.png" WIDTH="40px" alt="Neutral Sentiment">
-                                {% endif %}
-                                <div class="card-body">
-                                    {% if review.car_make %}
-                                        <h3 class="card-title">{{ review.car_make }}, {{ review.car_model }}</h3>
-                                        <h3 class="card-title">{{ review.purchase_date|slice:"-4:" }}</h3>
-                                        <p class="card-text">{{ review.review }}</p>
-                                    {% else %}
-                                        <h3 class="card-text">{{ review.review }}</h3>
-                                    {% endif %}
-                                
-                                </div>
-                            </div>
-                        {% endfor %}
-
-                    {% else %}
-
-                        <h3 class="text-muted text-center">No reviews for now...</h3>
-
-                    {% endif %}
-
-                </div>
+    <!--Add a nav bar here -->
+    <nav class="navbar navbar-light shadow" style="background-color: #e3f2fd;">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="{% url 'djangoapp:index' %}">Best Cars</a> 
             </div>
-        </main>
-        
-        
-    </body>
+            
+            <ul class="nav navbar-nav flex-row">
+                {% if current_endpoint == "/djangoapp/about/" %}
+                    <li class="nav-item mx-5 active">
+                        <a class="nav-link" href="{% url 'djangoapp:about' %}">About Us</a>
+                    </li>
+                    <li class="nav-item mx-5">
+                        <a class="nav-link" href="{% url 'djangoapp:contact' %}">Contact Us</a>
+                    </li>
+                {% elif current_endpoint == "/djangoapp/contact/" %}
+                    <li class="nav-item mx-5">
+                        <a class="nav-link" href="{% url 'djangoapp:about' %}">About Us</a>
+                    </li>
+                    <li class="nav-item mx-5 active">
+                        <a class="nav-link" href="{% url 'djangoapp:contact' %}">Contact Us</a>
+                    </li>
+                {% else %}
+                    <li class="nav-item mx-5">
+                        <a class="nav-link" href="{% url 'djangoapp:about' %}">About Us</a>
+                    </li>
+                    <li class="nav-item mx-5">
+                        <a class="nav-link" href="{% url 'djangoapp:contact' %}">Contact Us</a>
+                    </li>
+                {% endif %}
+            </ul>
+            
+            <ul class="nav navbar-nav navbar-right">
+                {% if user.is_authenticated %}
+                <li>
+                    <a class="btn btn-link" href="#">({{ user.username }})</a>
+                    <a class="btn btn-link" href="{% url 'djangoapp:logout' %}">Logout</a>
+                </li>
+                {% else %}
+                <li>
+                    <form class="form-inline" action="{% url 'djangoapp:login' %}" method="post">
+                        {% csrf_token %}
+                        <div class="input-group">
+                            <input type="text" class="form-control" placeholder="Username" name="username" >
+                            <input type="password" class="form-control" placeholder="Password" name="psw" >
+                            <button class="btn btn-primary" type="submit">Login</button>
+                            <a class="btn btn-link" href="{% url 'djangoapp:registration' %}">Sign Up</a>
+                        </div>
+                    </form>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+
+    <main class="container">
+
+        <div class="jumbotron mt-5 shadow-lg">
+            <h1 class="display-4">Contact Us</h1>
+            <hr class="my-4">
+            <p><span class="lead">Email: </span> <span class="mx-2">sales@bestcars.com</span></p>
+            <p><span class="lead">Telephone: </span> <span class="mx-2">555-55-55</span></p>
+            <p><span class="lead">Address: </span> <span class="mx-2">1234 Elm Street, Los Angeles, CA 90017</span></p>
+        </div>
+
+    </main>
+
+</body>
 </html>
