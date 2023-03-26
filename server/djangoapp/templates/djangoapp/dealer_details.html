@@ -1,87 +1,155 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+    <head>
 
-    <meta charset="UTF-8">
-    <title>Dealership Review</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-    <link href="https://unpkg.com/bootstrap-table@1.18.2/dist/bootstrap-table.min.css" rel="stylesheet">
-    <script src="https://unpkg.com/bootstrap-table@1.18.2/dist/bootstrap-table.min.js"></script>
-    <script src="https://unpkg.com/bootstrap-table@1.18.2/dist/extensions/filter-control/bootstrap-table-filter-control.min.js"></script>
+        <meta charset="UTF-8">
+        {% load static %}
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.5.0/css/bootstrap-datepicker.css" rel="stylesheet">
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.5.0/js/bootstrap-datepicker.js"></script>
 
-</head>
+        <script defer>
 
-<body>
+            const purchased = () => {
 
-    <!--Add a nav bar here -->
-    <nav class="navbar navbar-light shadow" style="background-color: #e3f2fd;">
-        <div class="container-fluid">
-            <div class="navbar-header">
-                <a class="navbar-brand" href="{% url 'djangoapp:index' %}">Best Cars</a> 
+                let isChecked = document.getElementById("purchasecheck").checked;
+
+                let carOptions = document.getElementsByClassName("car_options")
+
+                if(isChecked){
+
+                    document.getElementById("car").disabled = false;
+                    document.getElementById("car").required = true;
+                    document.getElementById("purchasedate").disabled = false;
+                    document.getElementById("purchasedate").required = true;
+                    document.getElementById("default").classList.add("d-none");
+                    document.getElementById("default").selected = false;
+
+                    for(let carOption in carOptions){
+                        carOption.selected = true;
+                    }
+
+                }else{
+
+                    for(let carOption in carOptions){
+                        carOption.selected = false;
+                    }
+
+                    document.getElementById("car").disabled = true;
+                    document.getElementById("car").required = false;
+                    document.getElementById("purchasedate").disabled = true;
+                    document.getElementById("purchasedate").required = false;
+                    document.getElementById("default").classList.remove("d-none");
+                    document.getElementById("default").selected = true;
+
+                }
+            };
+
+            purchased()
+
+        </script>
+
+    </head>
+    <body>
+        <!--Add a nav bar here -->
+        <nav class="navbar navbar-light shadow" style="background-color: #e3f2fd;">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="{% url 'djangoapp:index' %}">Best Cars</a> 
+                </div>
+        
+                <ul class="nav navbar-nav flex-row">
+                    {% if current_endpoint == "/djangoapp/about/" %}
+                        <li class="nav-item mx-5 active">
+                            <a class="nav-link" href="{% url 'djangoapp:about' %}">About Us</a>
+                        </li>
+                        <li class="nav-item mx-5">
+                            <a class="nav-link" href="{% url 'djangoapp:contact' %}">Contact Us</a>
+                        </li>
+                    {% elif current_endpoint == "/djangoapp/contact/" %}
+                        <li class="nav-item mx-5">
+                            <a class="nav-link" href="{% url 'djangoapp:about' %}">About Us</a>
+                        </li>
+                        <li class="nav-item mx-5 active">
+                            <a class="nav-link" href="{% url 'djangoapp:contact' %}">Contact Us</a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item mx-5">
+                            <a class="nav-link" href="{% url 'djangoapp:about' %}">About Us</a>
+                        </li>
+                        <li class="nav-item mx-5">
+                            <a class="nav-link" href="{% url 'djangoapp:contact' %}">Contact Us</a>
+                        </li>
+                    {% endif %}
+                </ul>
+        
+                <ul class="nav navbar-nav navbar-right">
+                    {% if user.is_authenticated %}
+                        <li class="d-flex align-items-baseline">
+                            <a href="{% url 'djangoapp:add_review' dealer_id %}">Write a Review</a>
+                            <a class="btn btn-link" href="#">({{ user.username }})</a>
+                            <a class="btn btn-link" href="{% url 'djangoapp:logout' %}">Logout</a>
+                        </li>
+                    {% else %}
+                        <li>
+                            <form class="form-inline" action="{% url 'djangoapp:login' %}" method="post">
+                                {% csrf_token %}
+                                <div class="input-group">
+                                    <input type="text" class="form-control" placeholder="Username" name="username" >
+                                    <input type="password" class="form-control" placeholder="Password" name="psw" >
+                                    <button class="btn btn-primary" type="submit">Login</button>
+                                    <a class="btn btn-link" href="{% url 'djangoapp:registration' %}">Sign Up</a>
+                                </div>
+                            </form>
+                        </li>
+                    {% endif %}
+                </ul>
             </div>
+        </nav>
+
+        <main class="container-fluid mt-4">
+            <h1>Add a review about <b>{{ dealer_name }}</b></h1>
+            <!--Add review form here -->
+            <form action="{% url 'djangoapp:add_review' dealer_id %}" method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="content"><b>Enter the review content:</b></label>
+                    <textarea class="form-control" id="content" name="content" rows="2" spellcheck="false" required></textarea>
+                </div>
+
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="purchasecheck" id="purchasecheck" style="margin-top: 6.7px;" onclick="purchased()">
+                    <label for="purchasecheck">Has purchased the car from {{ dealer_name }} ? <span class="text-muted">(select purchased car information below if checked)</span></label>
+                </div>
+                    
+                <div class="form-group">
+                    <label for="car"><b>Select your car (model-make-year):</b></label>
+                    <select name="car" id="car" class="form-select" disabled>
+                        <option class="" selected disabled value="" id="default">---------------------------</option>
+                        {% for car in cars %}
+                            <option class="car_options" value="{{car.id}}">{{car.name}}-{{car.car_make}}-{{ car.car_year|date:"Y" }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="purchasedate"><b>Select Your Purchase Date:</b></label>
+                    <input class="date-own form-control" type="text" name="purchasedate" id="purchasedate" style="width: 300px;" disabled>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Submit</button>
             
-            <ul class="nav navbar-nav flex-row">
-                {% if current_endpoint == "/djangoapp/about/" %}
-                    <li class="nav-item mx-5 active">
-                        <a class="nav-link" href="{% url 'djangoapp:about' %}">About Us</a>
-                    </li>
-                    <li class="nav-item mx-5">
-                        <a class="nav-link" href="{% url 'djangoapp:contact' %}">Contact Us</a>
-                    </li>
-                {% elif current_endpoint == "/djangoapp/contact/" %}
-                    <li class="nav-item mx-5">
-                        <a class="nav-link" href="{% url 'djangoapp:about' %}">About Us</a>
-                    </li>
-                    <li class="nav-item mx-5 active">
-                        <a class="nav-link" href="{% url 'djangoapp:contact' %}">Contact Us</a>
-                    </li>
-                {% else %}
-                    <li class="nav-item mx-5">
-                        <a class="nav-link" href="{% url 'djangoapp:about' %}">About Us</a>
-                    </li>
-                    <li class="nav-item mx-5">
-                        <a class="nav-link" href="{% url 'djangoapp:contact' %}">Contact Us</a>
-                    </li>
-                {% endif %}
-            </ul>
-            
-            <ul class="nav navbar-nav navbar-right">
-                {% if user.is_authenticated %}
-                <li>
-                    <a class="btn btn-link" href="#">({{ user.username }})</a>
-                    <a class="btn btn-link" href="{% url 'djangoapp:logout' %}">Logout</a>
-                </li>
-                {% else %}
-                <li>
-                    <form class="form-inline" action="{% url 'djangoapp:login' %}" method="post">
-                        {% csrf_token %}
-                        <div class="input-group">
-                            <input type="text" class="form-control" placeholder="Username" name="username" >
-                            <input type="password" class="form-control" placeholder="Password" name="psw" >
-                            <button class="btn btn-primary" type="submit">Login</button>
-                            <a class="btn btn-link" href="{% url 'djangoapp:registration' %}">Sign Up</a>
-                        </div>
-                    </form>
-                </li>
-                {% endif %}
-            </ul>
-        </div>
-    </nav>
+            </form>
+           
+        </main>
+    </body>
+    <script type="text/javascript" defer>
 
-    <main class="container">
+        $('.date-own').datepicker({
+            format: 'mm/dd/yyyy'
+        });
 
-        <div class="jumbotron mt-5 shadow-lg">
-            <h1 class="display-4">Contact Us</h1>
-            <hr class="my-4">
-            <p><span class="lead">Email: </span> <span class="mx-2">sales@bestcars.com</span></p>
-            <p><span class="lead">Telephone: </span> <span class="mx-2">555-55-55</span></p>
-            <p><span class="lead">Address: </span> <span class="mx-2">1234 Elm Street, Los Angeles, CA 90017</span></p>
-        </div>
-
-    </main>
-
-</body>
+   </script>
 </html>
