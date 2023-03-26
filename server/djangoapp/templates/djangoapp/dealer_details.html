@@ -1,154 +1,109 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
+    <head>
+
+    <meta charset="UTF-8">
     <title>Dealership Review</title>
     {% load static %}
-    <link
-      rel="stylesheet"
-      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-    />
-  </head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 
-  <body class="vh-100">
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <a class="navbar-brand" href="{% url 'djangoapp:index' %}"
-        >Dealership Review</a
-      >
-      <button
-        class="navbar-toggler"
-        type="button"
-        data-toggle="collapse"
-        data-target="#navbarNav"
-        aria-controls="navbarNav"
-        aria-expanded="false"
-        aria-label="Toggle navigation"
-      >
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav">
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'djangoapp:index' %}"
-              >Home <span class="sr-only">(current)</span></a
-            >
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'djangoapp:about' %}">About</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'djangoapp:contact' %}">Contact</a>
-          </li>
-        </ul>
-        {% if user.is_authenticated %}
-        <div class="ml-auto">
-          <span class="mr-2">{{ user.first_name }}({{ user.username }})</span>
-          <a class="btn btn-link" method= "GET" href="{% url 'djangoapp:add_review' dealer.id %}">Add review</a>
-          <a href="{% url 'djangoapp:logout' %}">Log out</a>
-        </div>
-        {% else %}
-        <form
-          class="form-inline ml-auto"
-          action="{% url 'djangoapp:login' %}"
-          method="post"
-        >
-          {% csrf_token %}
-          <input
-            class="form-control mr-sm-2"
-            type="text"
-            placeholder="Username"
-            name="username"
-            required
-          />
-          <input
-            class="form-control mr-sm-2"
-            type="password"
-            placeholder="Password"
-            name="psw"
-            required
-          />
-          <button class="btn btn-primary my-2 my-sm-0 mr-2" type="submit">
-            Login
-          </button>
-          <a
-            class="btn btn-outline-primary my-2 my-sm-0"
-            href="{% url 'djangoapp:registration' %}"
-            >Sign Up</a
-          >
-        </form>
-        {% endif %}
-      </div>
-    </nav>
+    </head>
+    <body>
 
-    <div class="container mt-5">
-      <div class="rows">
-        <div class="col-md mb-5">
-          <h3>Reviews for <strong>{{ dealer.full_name }}</strong></h3>
-        </div>
-        <div class="col-md">
-          {% if reviews %}
-          <div class="card-columns">
-            {% for review in reviews %}
-            <div class="card">
-              {% if review.sentiment == 'positive' %}
-              <img
-                class="card-img-left"
-                src="{{MEDIA_URL}}/emoji/positive.png"
-                style="width: 30px; height: 30px"
-              />
-              {% endif %} {% if review.sentiment == 'neutral' %}
-              <img
-                class="card-img-left"
-                src="{{MEDIA_URL}}/emoji/neutral.png"
-                style="width: 30px; height: 30px"
-              />
-              {% endif %} {% if review.sentiment == 'negative' %}
-              <img
-                class="card-img-left"
-                src="{{MEDIA_URL}}/emoji/negative.png"
-                style="width: 30px; height: 30px"
-              />
-              {% endif %}
+        <!--Add a nav bar here -->
+            <nav class="navbar navbar-light shadow" style="background-color: #e3f2fd;">
+                <div class="container-fluid">
+                    <div class="navbar-header">
+                        <a class="navbar-brand" href="{% url 'djangoapp:index' %}">Best Cars</a> 
+                    </div>
+            
+                    <ul class="nav navbar-nav flex-row">
+                        {% if current_endpoint == "/djangoapp/about/" %}
+                            <li class="nav-item mx-5 active">
+                                <a class="nav-link" href="{% url 'djangoapp:about' %}">About Us</a>
+                            </li>
+                            <li class="nav-item mx-5">
+                                <a class="nav-link" href="{% url 'djangoapp:contact' %}">Contact Us</a>
+                            </li>
+                        {% elif current_endpoint == "/djangoapp/contact/" %}
+                            <li class="nav-item mx-5">
+                                <a class="nav-link" href="{% url 'djangoapp:about' %}">About Us</a>
+                            </li>
+                            <li class="nav-item mx-5 active">
+                                <a class="nav-link" href="{% url 'djangoapp:contact' %}">Contact Us</a>
+                            </li>
+                        {% else %}
+                            <li class="nav-item mx-5">
+                                <a class="nav-link" href="{% url 'djangoapp:about' %}">About Us</a>
+                            </li>
+                            <li class="nav-item mx-5">
+                                <a class="nav-link" href="{% url 'djangoapp:contact' %}">Contact Us</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+            
+                    <ul class="nav navbar-nav navbar-right">
+                        {% if user.is_authenticated %}
+                            <li class="d-flex align-items-baseline">
+                                <a href="{% url 'djangoapp:add_review' dealer_id %}">Write a Review</a>
+                                <a class="btn btn-link" href="#">({{ user.username }})</a>
+                                <a class="btn btn-link" href="{% url 'djangoapp:logout' %}">Logout</a>
+                            </li>
+                        {% else %}
+                            <li>
+                                <form class="form-inline" action="{% url 'djangoapp:login' %}" method="post">
+                                    {% csrf_token %}
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" placeholder="Username" name="username" >
+                                        <input type="password" class="form-control" placeholder="Password" name="psw" >
+                                        <button class="btn btn-primary" type="submit">Login</button>
+                                        <a class="btn btn-link" href="{% url 'djangoapp:registration' %}">Sign Up</a>
+                                    </div>
+                                </form>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </nav>
+        <!-- Add reviews as cards -->
+        <main class="container-fluid">
+            <h2 class="mt-4">Reviews for <b>{{ dealer_name }}</b></h2>
+            <div class="container mt-4">
+                <div class="card-columns">
+                    {% if review_list %}
 
-              <div class="card-body bg-light">
-                {% if review.car_make %}
-                <h5 class="card-title">{{review.car_make}}, {{review.car_model}}</h5>
-                <h5 class="card-title">{{review.car_year}}</h5>
-                {% else %} 
-                <h5 class="card-title">Reviewer did not buy any car.</h5>
-                <h5 class="card-title" style="color: #f8f9fa;">.</h5>
-                {% endif %}
-                </h5>
-                <label class="card-title">{{review.review}} </label>
-              </div>
+                        {% for review in review_list %}
+                            <div class="card" style="min-height: 210px;">
+                                {% if review.sentiment == "positive" %}
+                                    <img class="card-img-left" src="{{MEDIA_URL}}/emoji/positive.png" WIDTH="40px" alt="Positive Sentiment">
+                                {% elif review.sentiment == "negative" %}
+                                    <img class="card-img-left" src="{{MEDIA_URL}}/emoji/negative.png" WIDTH="40px" alt="Negative Sentiment">
+                                {% else %}
+                                    <img class="card-img-left" src="{{MEDIA_URL}}/emoji/neutral.png" WIDTH="40px" alt="Neutral Sentiment">
+                                {% endif %}
+                                <div class="card-body">
+                                    {% if review.car_make %}
+                                        <h3 class="card-title">{{ review.car_make }}, {{ review.car_model }}</h3>
+                                        <h3 class="card-title">{{ review.purchase_date|slice:"-4:" }}</h3>
+                                        <p class="card-text">{{ review.review }}</p>
+                                    {% else %}
+                                        <h3 class="card-text">{{ review.review }}</h3>
+                                    {% endif %}
+                                
+                                </div>
+                            </div>
+                        {% endfor %}
+
+                    {% else %}
+
+                        <h3 class="text-muted text-center">No reviews for now...</h3>
+
+                    {% endif %}
+
+                </div>
             </div>
-          {% endfor %}
-          {% else %}
-          <div class="card-columns">
-            <div class="card">
-              <div class="card-body bg-light">
-                <h5 class="card-title">No reviews yet</h5>
-                <a class="btn btn-link" method= "GET" href="{% url 'djangoapp:add_review' dealer.id %}">Be first to add a review?</a>
-              </div>
-            </div>
-          </div>
-          {% endif %}
-          </div>
-        </div>
-      </div>
-      {% if reviews %}
-      <div style="min-height: 560px"></div>
-      {% else %}
-      <div style="min-height: 625px"></div>
-      {% endif %}
-    </div>
-    <footer class="bg-light text-center text-lg-start mt-5">
-      <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.2)">
-        © 2022
-        <a class="text-dark" href="{% url 'djangoapp:index' %}"
-          >Dealership Review</a
-        >
-      </div>
-    </footer>
-  </body>
+        </main>
+        
+        
+    </body>
 </html>
